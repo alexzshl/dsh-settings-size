@@ -18,6 +18,8 @@ DSH 的设置弹框是**硬编码 800×800** 的，在宽屏上显得局促：�
 - 持久化：`localStorage`，键 `dsh-settings-size:size`
 - 无构建步骤：`lib/*.js` 就是最终产物
 
+![设置弹框尺寸控件：预设、宽高滑块与恢复默认](docs/screenshot-zh.png)
+
 ---
 
 ## 安装
@@ -230,7 +232,10 @@ dsh-settings-size/
 ├── cordis.patch.yml     # profile patch 层：插入 loader 条目 id=settings-size
 ├── lib/
 │   ├── index.js         # host 半：no-op apply
-│   └── client.js        # browser 半：CSS 覆盖 + 设置行 + 持久化
+│   └── client.js        # browser 半：CSS 覆盖 + 设置行 + 本地化 + 持久化
+├── docs/
+│   ├── screenshot-zh.png
+│   └── screenshot-en.png
 └── README.md / README.en.md
 ```
 

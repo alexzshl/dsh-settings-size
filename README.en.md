@@ -18,6 +18,8 @@ The DSH settings dialog is hardcoded to **800×800**, which feels cramped on a w
 - Persistence: `localStorage`, key `dsh-settings-size:size`
 - No build step: `lib/*.js` is the shipped artifact
 
+![The dialog size row: presets, width and height sliders, and reset](docs/screenshot-en.png)
+
 ---
 
 ## Install
@@ -233,7 +235,10 @@ dsh-settings-size/
 ├── cordis.patch.yml     # profile patch layer: loader entry id=settings-size
 ├── lib/
 │   ├── index.js         # host half: no-op apply
-│   └── client.js        # browser half: CSS override + settings row + persistence
+│   └── client.js        # browser half: CSS override + settings row + i18n + persistence
+├── docs/
+│   ├── screenshot-zh.png
+│   └── screenshot-en.png
 └── README.md / README.en.md
 ```
 
