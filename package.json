@@ -6,12 +6,12 @@
   "author": "alexzshl <alexzshl@126.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexzshl/dsh-setting-size.git"
+    "url": "git+https://github.com/alexzshl/dsh-settings-size.git"
   },
   "bugs": {
-    "url": "https://github.com/alexzshl/dsh-setting-size/issues"
+    "url": "https://github.com/alexzshl/dsh-settings-size/issues"
   },
-  "homepage": "https://github.com/alexzshl/dsh-setting-size#readme",
+  "homepage": "https://github.com/alexzshl/dsh-settings-size#readme",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
