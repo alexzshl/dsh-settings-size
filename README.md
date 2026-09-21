@@ -103,7 +103,46 @@ dsh plugin --profile web remove -w dsh-settings-size
 
 ---
 
-## 为什么需要它
+## 参数与默认值
+
+| 项目 | 值 |
+|---|---|
+| 默认尺寸 | 1080 × 900 |
+| 宽度范围 / 步进 | 640 – 3000 px / 10 px |
+| 高度范围 / 步进 | 560 – 2000 px / 10 px |
+| 视口留边 | 四边各 32 px |
+| 存储键 | `dsh-settings-size:size` |
+| 存储格式 | `"<宽度>x<高度>"`，例如 `"1080x900"` |
+| 设置行位置 | `settings.general.item`，`id: settings-size`，`order: 15` |
+| 依赖服务 | `slots` |
+
+---
+
+## 兼容性与已知限制
+
+- **依赖弹框的 DOM 结构** `role="presentation" > role="dialog"[aria-modal]`。若未来 DSH 改版换了这层结构，
+  只需要改 `lib/client.js` 里的 `PANEL` 常量，其余逻辑不受影响——这也是不用哈希类名的原因。
+- **只影响 Web GUI**。TUI / desktop profile 不加载 `dsh.client`，插件对它无副作用。
+- **不修改任何 shipped 文件**：全部通过覆盖式 CSS 与槽位注册实现。
+- 尺寸以 CSS 像素计，浏览器缩放会等比影响观感（与 DSH 其他 UI 一致）。
+
+---
+
+## 开发
+
+本仓库**没有构建步骤**：`lib/client.js` 就是手写的 CJS bundle，改完直接生效（浏览器硬刷新即可，
+服务器按请求从磁盘读取）。本地开发用 `link:` 安装最方便：
+
+```sh
+dsh plugin --profile web add -w <本仓库路径>
+```
+
+---
+
+## 深入阅读（可选）
+
+<details>
+<summary><b>为什么需要它</b> —— shipped 的两层尺寸限制</summary>
 
 ### 一层：面板尺寸写死
 
@@ -131,9 +170,10 @@ dsh plugin --profile web remove -w dsh-settings-size
 
 本插件**同时覆盖这两层**。
 
----
+</details>
 
-## 工作原理
+<details>
+<summary><b>工作原理</b> —— 双面包结构、选择器策略、持久化边界</summary>
 
 ### 双面包结构
 
@@ -173,9 +213,7 @@ DSH 的 Host settings 通道只向浏览器暴露一个 allowlist（`WEB_SETTING
 第三方命名空间会得到 `settings-not-exposed`。弹框尺寸属于**浏览器侧的视觉偏好**，用 `localStorage`
 既符合产品自身对远程浏览器偏好的边界，又能在同源刷新后保留。
 
----
-
-## 项目结构
+### 项目结构
 
 ```
 dsh-settings-size/
@@ -187,34 +225,10 @@ dsh-settings-size/
 └── README.md / README.en.md
 ```
 
----
+</details>
 
-## 参数与默认值
-
-| 项目 | 值 |
-|---|---|
-| 默认尺寸 | 1080 × 900 |
-| 宽度范围 / 步进 | 640 – 3000 px / 10 px |
-| 高度范围 / 步进 | 560 – 2000 px / 10 px |
-| 视口留边 | 四边各 32 px |
-| 存储键 | `dsh-settings-size:size` |
-| 存储格式 | `"<宽度>x<高度>"`，例如 `"1080x900"` |
-| 设置行位置 | `settings.general.item`，`id: settings-size`，`order: 15` |
-| 依赖服务 | `slots` |
-
----
-
-## 兼容性与已知限制
-
-- **依赖弹框的 DOM 结构** `role="presentation" > role="dialog"[aria-modal]`。若未来 DSH 改版换了这层结构，
-  只需要改 `lib/client.js` 里的 `PANEL` 常量，其余逻辑不受影响——这也是不用哈希类名的原因。
-- **只影响 Web GUI**。TUI / desktop profile 不加载 `dsh.client`，插件对它无副作用。
-- **不修改任何 shipped 文件**：全部通过覆盖式 CSS 与槽位注册实现。
-- 尺寸以 CSS 像素计，浏览器缩放会等比影响观感（与 DSH 其他 UI 一致）。
-
----
-
-## 给插件作者的两条坑
+<details>
+<summary><b>给插件作者的两条坑</b> —— 变量遮蔽导致的静默失败</summary>
 
 写这个插件时踩到的两个**静默失败**，都是变量遮蔽，记在这里省得别人再花时间：
 
@@ -230,16 +244,7 @@ dsh-settings-size/
 共同点是：**内层作用域声明了与外层同名但语义不同的绑定，且失败是静默的。**
 调试这类问题时，先拿运行态数据（DOM 探针 / 实际计算样式），不要凭猜测改选择器。
 
----
-
-## 开发
-
-本仓库**没有构建步骤**：`lib/client.js` 就是手写的 CJS bundle，改完直接生效（浏览器硬刷新即可，
-服务器按请求从磁盘读取）。本地开发用 `link:` 安装最方便：
-
-```sh
-dsh plugin --profile web add -w <本仓库路径>
-```
+</details>
 
 ---
 

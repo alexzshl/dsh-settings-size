@@ -101,7 +101,47 @@ The dialog resizes **as you drag** — no close-and-reopen.
 
 ---
 
-## Why it is needed
+## Parameters and defaults
+
+| Item | Value |
+|---|---|
+| Default size | 1080 × 900 |
+| Width range / step | 640 – 3000 px / 10 px |
+| Height range / step | 560 – 2000 px / 10 px |
+| Viewport gutter | 32 px on each side |
+| Storage key | `dsh-settings-size:size` |
+| Storage format | `"<width>x<height>"`, e.g. `"1080x900"` |
+| Row slot | `settings.general.item`, `id: settings-size`, `order: 15` |
+| Injected service | `slots` |
+
+---
+
+## Compatibility and known limits
+
+- **It depends on the dialog's DOM structure** `role="presentation" > role="dialog"[aria-modal]`. If a future
+  DSH release reshapes that layer, only the `PANEL` constant in `lib/client.js` needs updating — which is
+  exactly why the hashed class name is not used.
+- **Web GUI only.** The TUI and desktop profiles never load `dsh.client`, so the plugin has no effect there.
+- **No shipped file is modified** — everything is done with overriding CSS and a slot registration.
+- Sizes are CSS pixels; browser zoom scales the result like any other DSH UI.
+
+---
+
+## Development
+
+There is **no build step**: `lib/client.js` is a hand-written CJS bundle. Edits take effect on a hard refresh
+(the server reads the file from disk per request). For local work, a `link:` install is the easiest path:
+
+```sh
+dsh plugin --profile web add -w <path-to-this-repo>
+```
+
+---
+
+## Further reading (optional)
+
+<details>
+<summary><b>Why it is needed</b> — the two shipped size layers</summary>
 
 ### Layer 1 — the panel size is hardcoded
 
@@ -129,9 +169,10 @@ Widening the panel alone **does not help**: each section still clamps its conten
 
 This plugin overrides **both layers**.
 
----
+</details>
 
-## How it works
+<details>
+<summary><b>How it works</b> — dual-face shape, selector strategy, persistence boundary</summary>
 
 ### Dual-face shape
 
@@ -173,9 +214,7 @@ DSH's Host settings wire only exposes an allowlisted set of namespaces to browse
 `settings-not-exposed`. A dialog size is a **browser-side visual preference**; `localStorage` matches the
 boundary the product already keeps for remote browser preferences while still surviving a same-origin reload.
 
----
-
-## Repository layout
+### Repository layout
 
 ```
 dsh-settings-size/
@@ -187,35 +226,10 @@ dsh-settings-size/
 └── README.md / README.en.md
 ```
 
----
+</details>
 
-## Parameters and defaults
-
-| Item | Value |
-|---|---|
-| Default size | 1080 × 900 |
-| Width range / step | 640 – 3000 px / 10 px |
-| Height range / step | 560 – 2000 px / 10 px |
-| Viewport gutter | 32 px on each side |
-| Storage key | `dsh-settings-size:size` |
-| Storage format | `"<width>x<height>"`, e.g. `"1080x900"` |
-| Row slot | `settings.general.item`, `id: settings-size`, `order: 15` |
-| Injected service | `slots` |
-
----
-
-## Compatibility and known limits
-
-- **It depends on the dialog's DOM structure** `role="presentation" > role="dialog"[aria-modal]`. If a future
-  DSH release reshapes that layer, only the `PANEL` constant in `lib/client.js` needs updating — which is
-  exactly why the hashed class name is not used.
-- **Web GUI only.** The TUI and desktop profiles never load `dsh.client`, so the plugin has no effect there.
-- **No shipped file is modified** — everything is done with overriding CSS and a slot registration.
-- Sizes are CSS pixels; browser zoom scales the result like any other DSH UI.
-
----
-
-## Two traps for plugin authors
+<details>
+<summary><b>Two traps for plugin authors</b> — silent failures caused by variable shadowing</summary>
 
 Both hit this plugin as **silent failures**, and both are variable shadowing. Written down so the next author does not pay for them:
 
@@ -232,16 +246,7 @@ The common shape: **an inner scope declares a binding with the same name as an o
 semantics, and the failure is silent.** When debugging that class of problem, get runtime facts first
 (a DOM probe, the computed style) instead of guessing at selectors.
 
----
-
-## Development
-
-There is **no build step**: `lib/client.js` is a hand-written CJS bundle. Edits take effect on a hard refresh
-(the server reads the file from disk per request). For local work, a `link:` install is the easiest path:
-
-```sh
-dsh plugin --profile web add -w <path-to-this-repo>
-```
+</details>
 
 ---
 
