@@ -20,64 +20,6 @@ The DSH settings dialog is hardcoded to **800×800**, which feels cramped on a w
 
 ---
 
-## Why it is needed
-
-### Layer 1 — the panel size is hardcoded
-
-From `SettingsRoot.module.css` in `@deepseek-ai/dsh-client-ui-settings-general`:
-
-```css
-.VOzbGW_panel {
-  width: 800px;
-  max-width: calc(100vw - 48px);
-  height: min(800px, 100vh - 48px);
-}
-.VOzbGW_nav { width: 188px; }   /* fixed nav rail */
-```
-
-### Layer 2 — every section caps its own content column
-
-Widening the panel alone **does not help**: each section still clamps its content column, so the extra width stays empty:
-
-| Section | Content cap |
-|---|---|
-| `.zGbnIq_section` (models) | `max-width:720px` |
-| `.rtSEdW_section` (agent presets) | `max-width:720px` |
-| `.pbvGtq_section` (plugins) | `max-width:760px` |
-| `.qSYn7G_section` (plugin inventory) | `max-width:760px` |
-
-This plugin overrides **both layers**.
-
----
-
-## Features
-
-### Presets
-
-| Preset | Target size | Notes |
-|---|---|---|
-| 标准 (Standard) | 800 × 800 | the shipped size |
-| **大 (Large)** | **1080 × 900** | **default** |
-| 超大 (XL) | 1400 × 1080 | |
-| 近全屏 (Near-fullscreen) | 3000 × 2000 | deliberately oversized; `min()` clamps it to the viewport |
-
-### Sliders
-
-| Control | Range | Step |
-|---|---|---|
-| Width | 640 – 3000 px | 10 px |
-| Height | 560 – 2000 px | 10 px |
-
-The dialog resizes **as you drag** — no close-and-reopen.
-
-### Also
-
-- **Never overflows the viewport**: the rule reads `min(<target>px, calc(100vw - 32px))`, so a small screen or narrow window stays safe.
-- **Reset to default**: one click back to 1080×900.
-- **This browser only**: switching browsers, or clearing site data, returns to the default.
-
----
-
 ## Install
 
 Add this repository to the `web` profile:
@@ -128,6 +70,64 @@ dsh plugin --profile web remove -w dsh-settings-size
 ```
 
 Then restart `dsh web`. The plugin's `<style>` tag is owned by `ctx.effect` and is removed on unload; the `localStorage` key can be left alone or cleared by hand.
+
+---
+
+## Features
+
+### Presets
+
+| Preset | Target size | Notes |
+|---|---|---|
+| 标准 (Standard) | 800 × 800 | the shipped size |
+| **大 (Large)** | **1080 × 900** | **default** |
+| 超大 (XL) | 1400 × 1080 | |
+| 近全屏 (Near-fullscreen) | 3000 × 2000 | deliberately oversized; `min()` clamps it to the viewport |
+
+### Sliders
+
+| Control | Range | Step |
+|---|---|---|
+| Width | 640 – 3000 px | 10 px |
+| Height | 560 – 2000 px | 10 px |
+
+The dialog resizes **as you drag** — no close-and-reopen.
+
+### Also
+
+- **Never overflows the viewport**: the rule reads `min(<target>px, calc(100vw - 32px))`, so a small screen or narrow window stays safe.
+- **Reset to default**: one click back to 1080×900.
+- **This browser only**: switching browsers, or clearing site data, returns to the default.
+
+---
+
+## Why it is needed
+
+### Layer 1 — the panel size is hardcoded
+
+From `SettingsRoot.module.css` in `@deepseek-ai/dsh-client-ui-settings-general`:
+
+```css
+.VOzbGW_panel {
+  width: 800px;
+  max-width: calc(100vw - 48px);
+  height: min(800px, 100vh - 48px);
+}
+.VOzbGW_nav { width: 188px; }   /* fixed nav rail */
+```
+
+### Layer 2 — every section caps its own content column
+
+Widening the panel alone **does not help**: each section still clamps its content column, so the extra width stays empty:
+
+| Section | Content cap |
+|---|---|
+| `.zGbnIq_section` (models) | `max-width:720px` |
+| `.rtSEdW_section` (agent presets) | `max-width:720px` |
+| `.pbvGtq_section` (plugins) | `max-width:760px` |
+| `.qSYn7G_section` (plugin inventory) | `max-width:760px` |
+
+This plugin overrides **both layers**.
 
 ---
 
