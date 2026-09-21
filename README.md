@@ -131,8 +131,14 @@ dsh plugin --profile web remove -w dsh-settings-size
 
 ## 开发
 
-本仓库**没有构建步骤**：`lib/client.js` 就是手写的 CJS bundle，改完直接生效（浏览器硬刷新即可，
-服务器按请求从磁盘读取）。本地开发用 `link:` 安装最方便：
+本仓库**没有构建步骤**：`lib/client.js` 就是手写的 CJS bundle。
+
+web profile 带有 `dsh-client-hmr`，它用 `fs.watchFile` 轮询每个已安装的客户端 bundle，
+文件一变就调用 `clientModules.rebuilt(id)` 重新读取并合成，再通过 `/plugins/events` SSE
+把新模块推给浏览器热替换。所以**改完保存即生效，既不需要刷新也不需要重启**（轮询有极短的延迟）。
+
+只有当改动落在 host 半（`lib/index.js`）、`cordis.patch.yml`、`package.json`
+或 profile 组合时，才需要重启 `dsh web`。本地开发用 `link:` 安装最方便：
 
 ```sh
 dsh plugin --profile web add -w <本仓库路径>

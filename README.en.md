@@ -130,8 +130,15 @@ The dialog resizes **as you drag** — no close-and-reopen.
 
 ## Development
 
-There is **no build step**: `lib/client.js` is a hand-written CJS bundle. Edits take effect on a hard refresh
-(the server reads the file from disk per request). For local work, a `link:` install is the easiest path:
+There is **no build step**: `lib/client.js` is a hand-written CJS bundle.
+
+The web profile ships `dsh-client-hmr`, which polls every installed client bundle with `fs.watchFile`
+and calls `clientModules.rebuilt(id)` as soon as one changes, then pushes the new module to the browser
+over the `/plugins/events` SSE channel for a hot swap. **Saving the file is enough — no refresh and no
+restart** (the poll adds a very short delay).
+
+A restart of `dsh web` is only needed for changes to the host half (`lib/index.js`), `cordis.patch.yml`,
+`package.json`, or the profile composition. For local work, a `link:` install is the easiest path:
 
 ```sh
 dsh plugin --profile web add -w <path-to-this-repo>
