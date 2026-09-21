@@ -96,7 +96,7 @@ The dialog resizes **as you drag** — no close-and-reopen.
 ### Also
 
 - **Never overflows the viewport**: the rule reads `min(<target>px, calc(100vw - 32px))`, so a small screen or narrow window stays safe.
-- **Reset to default**: one click back to 1080×900.
+- **Reset to default 800×800**: one click back to **DSH's own size** — not the plugin's 1080×900 starting size.
 - **This browser only**: switching browsers, or clearing site data, returns to the default.
 
 ---
@@ -105,7 +105,8 @@ The dialog resizes **as you drag** — no close-and-reopen.
 
 | Item | Value |
 |---|---|
-| Default size | 1080 × 900 |
+| Starting size (nothing stored yet) | 1080 × 900 |
+| What the reset button restores | 800 × 800 (DSH's own size) |
 | Width range / step | 640 – 3000 px / 10 px |
 | Height range / step | 560 – 2000 px / 10 px |
 | Viewport gutter | 32 px on each side |
