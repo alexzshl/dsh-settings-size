@@ -113,7 +113,8 @@ The dialog resizes **as you drag** — no close-and-reopen.
 | Storage key | `dsh-settings-size:size` |
 | Storage format | `"<width>x<height>"`, e.g. `"1080x900"` |
 | Row slot | `settings.general.item`, `id: settings-size`, `order: 15` |
-| Injected service | `slots` |
+| Injected services | `slots`, `locale` |
+| Locale namespace | `settings.size` (zh / en, follows the active DSH language) |
 
 ---
 
@@ -189,8 +190,10 @@ The same shape as the shipped `ui-*` packages:
 - **Host half** (`lib/index.js`) — a `dsh.bundle` patch layer inserting one loader entry (`settings-size`); a no-op `apply`.
 - **Browser half** (`lib/client.js`) — a `dsh.client` bundle served by `dsh-client-modules` at
   `/plugins/dsh-settings-size/client.js`, executed through `window.__ModuleLoader__.load`'s CJS factory, with
-  `require()` resolving `react` against the shell's module table. It keeps one owned `<style>` tag in sync
-  and registers the row into `settings.general.item`.
+  `require()` resolving `react` against the shell's module table. It keeps one owned `<style>` tag in sync,
+  registers its zh/en dictionaries under the `settings.size` locale namespace, and registers the row into
+  `settings.general.item` with `locale`, so the owner injects a namespace-bound `t` and re-renders on a
+  language switch.
 
 ### Selector strategy
 

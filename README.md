@@ -115,7 +115,8 @@ dsh plugin --profile web remove -w dsh-settings-size
 | 存储键 | `dsh-settings-size:size` |
 | 存储格式 | `"<宽度>x<高度>"`，例如 `"1080x900"` |
 | 设置行位置 | `settings.general.item`，`id: settings-size`，`order: 15` |
-| 依赖服务 | `slots` |
+| 依赖服务 | `slots`、`locale` |
+| 语言命名空间 | `settings.size`（zh / en，跟随 DSH 语言自动切换） |
 
 ---
 
@@ -189,8 +190,9 @@ dsh plugin --profile web add -w <本仓库路径>
 - **Host 半**（`lib/index.js`）—— 一个 `dsh.bundle` patch 层，插入一条 loader 条目（`settings-size`）；`apply` 是空实现。
 - **Browser 半**（`lib/client.js`）—— 一个 `dsh.client` bundle，由 `dsh-client-modules` 在
   `/plugins/dsh-settings-size/client.js` 提供，通过 `window.__ModuleLoader__.load` 的 CJS 工厂执行，
-  `require()` 解析 shell 模块表里的 `react`。它维护一个自有 `<style>` 标签，并向
-  `settings.general.item` 注册那一行。
+  `require()` 解析 shell 模块表里的 `react`。它维护一个自有 `<style>` 标签，把中英字典注册进
+  `settings.size` 语言命名空间，并向 `settings.general.item` 注册那一行（注册时带 `locale`，
+  由 owner 注入命名空间绑定的 `t`，并在语言切换时重渲染）。
 
 ### 选择器策略
 
