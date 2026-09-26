@@ -7,6 +7,7 @@
 
 [![dsh.so risk](https://www.dsh.so/badge/dsh-settings-size.svg)](https://www.dsh.so/artifact/dsh-settings-size/)
 [![dsh.so install · dsh 0.1.7-rc.2](https://www.dsh.so/badge/install/dsh-settings-size@0.1.7-rc.2.svg)](https://www.dsh.so/artifact/dsh-settings-size/)
+[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/alexzshl/dsh-settings-size)
 
 ---
 
