@@ -121,6 +121,29 @@ The dialog resizes **as you drag** — no close-and-reopen.
 
 ## Compatibility and known limits
 
+### Version compatibility
+
+Manually verified against:
+
+| DSH version | Result |
+|---|---|
+| `0.1.5-rc.2` | ✅ passes |
+| `0.1.7-rc.2` | ✅ passes |
+
+Versions not listed here are **expected to work as well**. The plugin depends on only a few stable
+contracts — the `settings.general.item` slot, the `slots` and `locale` client services, and the settings
+dialog's DOM structure — and reads no internal implementation or undocumented field, so a breaking upgrade
+is unlikely. Compatibility results collected by third-party platforms (such as dsh.so) are worth checking too.
+
+`package.json` declares `"@deepseek-ai/dsh": "^0.1.0"`, which DSH validates with `semver.satisfies()` at
+startup and reports as an explicit version conflict when unsatisfied.
+
+If it misbehaves on your version, or you have an improvement in mind, please
+[open an issue](https://github.com/alexzshl/dsh-settings-size/issues) or send a PR — include the output of
+`dsh --version` and what you saw.
+
+### Known limits
+
 - **It depends on the dialog's DOM structure** `role="presentation" > role="dialog"[aria-modal]`. If a future
   DSH release reshapes that layer, only the `PANEL` constant in `lib/client.js` needs updating — which is
   exactly why the hashed class name is not used.

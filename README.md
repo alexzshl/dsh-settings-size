@@ -123,6 +123,27 @@ dsh plugin --profile web remove -w dsh-settings-size
 
 ## 兼容性与已知限制
 
+### 版本兼容性
+
+本插件在以下 DSH 版本上**手动验证通过**：
+
+| DSH 版本 | 结果 |
+|---|---|
+| `0.1.5-rc.2` | ✅ 通过 |
+| `0.1.7-rc.2` | ✅ 通过 |
+
+未列出的版本**预期同样可用**。插件只依赖少数稳定契约——`settings.general.item` 槽位、`slots` 与 `locale`
+两个客户端服务、以及设置弹框的 DOM 结构——不读取任何内部实现或未公开字段，因此升级带来破坏性变更的
+概率很低。第三方平台整理的兼容性结果（如 dsh.so）也值得一并参考。
+
+插件在 `package.json` 中声明了 `"@deepseek-ai/dsh": "^0.1.0"`，DSH 启动时会用 `semver.satisfies()`
+自动校验，不满足时给出明确的版本冲突告警。
+
+如果你在某个版本上遇到问题，或者有改进建议，欢迎[提交 Issue](https://github.com/alexzshl/dsh-settings-size/issues)
+或直接发起 PR；报告时请附上 `dsh --version` 的输出与具体现象。
+
+### 已知限制
+
 - **依赖弹框的 DOM 结构** `role="presentation" > role="dialog"[aria-modal]`。若未来 DSH 改版换了这层结构，
   只需要改 `lib/client.js` 里的 `PANEL` 常量，其余逻辑不受影响——这也是不用哈希类名的原因。
 - **只影响 Web GUI**。TUI / desktop profile 不加载 `dsh.client`，插件对它无副作用。
