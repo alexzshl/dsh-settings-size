@@ -3,7 +3,7 @@
 > **把 DSH 的设置弹框调到舒服的大小。**
 > 为 DeepSeek Harness（`dsh`）Web GUI 加一行「设置弹框尺寸」——预设一键切换，滑块实时微调，选择保存在本地。
 
-[English](README.en.md) · DSH 插件 · MIT
+[English](README.en.md) · [更新日志](CHANGELOG.md) · DSH 插件 · MIT
 
 ---
 

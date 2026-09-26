@@ -1,6 +1,6 @@
 {
   "name": "dsh-settings-size",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Resizable DSH settings dialog: size presets plus width/height sliders in Settings → General, persisted per browser",
   "license": "MIT",
   "author": "alexzshl <alexzshl@126.com>",

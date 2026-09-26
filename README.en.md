@@ -3,7 +3,7 @@
 > **Give the DSH settings dialog a size you actually like.**
 > A **设置弹框尺寸** row for the DeepSeek Harness (`dsh`) Web GUI — one-click presets, live width/height sliders, remembered locally.
 
-[中文](README.md) · DSH plugin · MIT
+[中文](README.md) · [Changelog](CHANGELOG.md) · DSH plugin · MIT
 
 ---
 
