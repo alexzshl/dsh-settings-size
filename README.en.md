@@ -5,6 +5,9 @@
 
 [中文](README.md) · [Changelog](CHANGELOG.md) · DSH plugin · MIT
 
+[![dsh.so risk](https://www.dsh.so/badge/dsh-settings-size.svg)](https://www.dsh.so/artifact/dsh-settings-size/)
+[![dsh.so install · dsh 0.1.7-rc.2](https://www.dsh.so/badge/install/dsh-settings-size@0.1.7-rc.2.svg)](https://www.dsh.so/artifact/dsh-settings-size/)
+
 ---
 
 ## What it is
@@ -133,7 +136,7 @@ Manually verified against:
 Versions not listed here are **expected to work as well**. The plugin depends on only a few stable
 contracts — the `settings.general.item` slot, the `slots` and `locale` client services, and the settings
 dialog's DOM structure — and reads no internal implementation or undocumented field, so a breaking upgrade
-is unlikely. Compatibility results collected by third-party platforms (such as dsh.so) are worth checking too.
+is unlikely. Compatibility results collected by third-party platforms (such as [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)) are worth checking too.
 
 `package.json` declares `"@deepseek-ai/dsh": "^0.1.0"`, which DSH validates with `semver.satisfies()` at
 startup and reports as an explicit version conflict when unsatisfied.

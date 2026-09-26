@@ -5,6 +5,9 @@
 
 [English](README.en.md) · [更新日志](CHANGELOG.md) · DSH 插件 · MIT
 
+[![dsh.so risk](https://www.dsh.so/badge/dsh-settings-size.svg)](https://www.dsh.so/artifact/dsh-settings-size/)
+[![dsh.so install · dsh 0.1.7-rc.2](https://www.dsh.so/badge/install/dsh-settings-size@0.1.7-rc.2.svg)](https://www.dsh.so/artifact/dsh-settings-size/)
+
 ---
 
 ## 简介
@@ -134,7 +137,7 @@ dsh plugin --profile web remove -w dsh-settings-size
 
 未列出的版本**预期同样可用**。插件只依赖少数稳定契约——`settings.general.item` 槽位、`slots` 与 `locale`
 两个客户端服务、以及设置弹框的 DOM 结构——不读取任何内部实现或未公开字段，因此升级带来破坏性变更的
-概率很低。第三方平台整理的兼容性结果（如 dsh.so）也值得一并参考。
+概率很低。第三方平台整理的兼容性结果（如 [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)）也值得一并参考。
 
 插件在 `package.json` 中声明了 `"@deepseek-ai/dsh": "^0.1.0"`，DSH 启动时会用 `semver.satisfies()`
 自动校验，不满足时给出明确的版本冲突告警。
