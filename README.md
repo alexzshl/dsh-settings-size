@@ -117,6 +117,7 @@ dsh plugin --profile web remove -w dsh-settings-size
 | 设置行位置 | `settings.general.item`，`id: settings-size`，`order: 15` |
 | 依赖服务 | `slots`、`locale` |
 | 语言命名空间 | `settings.size`（zh / en，跟随 DSH 语言自动切换） |
+| DSH 兼容范围 | `^0.1.0`（`peerDependencies` 里的 `@deepseek-ai/dsh`） |
 
 ---
 
@@ -126,6 +127,11 @@ dsh plugin --profile web remove -w dsh-settings-size
   只需要改 `lib/client.js` 里的 `PANEL` 常量，其余逻辑不受影响——这也是不用哈希类名的原因。
 - **只影响 Web GUI**。TUI / desktop profile 不加载 `dsh.client`，插件对它无副作用。
 - **不修改任何 shipped 文件**：全部通过覆盖式 CSS 与槽位注册实现。
+- **版本兼容声明只能写在 `peerDependencies`**：`dsh-app-boot` 的 `evaluatePluginCompatibility`
+  只扫描 `package.json` 里 `@deepseek-ai/dsh` 与 `@deepseek-ai/dsh-*` 开头的 peer，用
+  `semver.satisfies(runtime, range, { includePrerelease: true })` 比对，不满足时给出插件名、版本与
+  运行版本的告警（另有 exact-version 豁免机制）。`cordis.yml` / `cordis.patch.yml` 里的
+  `dshCompatibility` 之类字段**不会被读取**——那个文件是 patch 数组，多塞一个键只会让 loader 告警并跳过。
 - 尺寸以 CSS 像素计，浏览器缩放会等比影响观感（与 DSH 其他 UI 一致）。
 
 ---

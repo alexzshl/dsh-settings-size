@@ -115,6 +115,7 @@ The dialog resizes **as you drag** — no close-and-reopen.
 | Row slot | `settings.general.item`, `id: settings-size`, `order: 15` |
 | Injected services | `slots`, `locale` |
 | Locale namespace | `settings.size` (zh / en, follows the active DSH language) |
+| DSH compatibility | `^0.1.0` (the `@deepseek-ai/dsh` peer) |
 
 ---
 
@@ -125,6 +126,12 @@ The dialog resizes **as you drag** — no close-and-reopen.
   exactly why the hashed class name is not used.
 - **Web GUI only.** The TUI and desktop profiles never load `dsh.client`, so the plugin has no effect there.
 - **No shipped file is modified** — everything is done with overriding CSS and a slot registration.
+- **A compatibility declaration can only live in `peerDependencies`**: `dsh-app-boot`'s
+  `evaluatePluginCompatibility` scans only `package.json` peers named `@deepseek-ai/dsh` or starting with
+  `@deepseek-ai/dsh-`, comparing them with `semver.satisfies(runtime, range, { includePrerelease: true })`
+  and reporting the plugin name, version, and runtime version on a mismatch (with an exact-version exemption
+  mechanism). A `dshCompatibility`-style field in `cordis.yml` / `cordis.patch.yml` is **never read** — that
+  file is a patch array, so an extra key only makes the loader warn and skip the entry.
 - Sizes are CSS pixels; browser zoom scales the result like any other DSH UI.
 
 ---

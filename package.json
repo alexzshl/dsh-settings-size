@@ -48,6 +48,7 @@
     "web-ui"
   ],
   "peerDependencies": {
+    "@deepseek-ai/dsh": "^0.1.0",
     "react": "^18.2.0",
     "@deepseek-ai/cordis": "^4.0.1",
     "@deepseek-ai/dsh-client-runtime": "^0.1.0-rc.6"
