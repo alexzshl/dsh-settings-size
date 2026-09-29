@@ -5,16 +5,23 @@
 格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [未发布]
+## [0.1.5] - 2026-09-29
+
+让插件在 DSH 0.2.0 及以后版本继续可用。
 
 ### 修复
 
-- **DSH 0.2.0 拒绝加载本插件**：早期声明的 `"@deepseek-ai/dsh": "^0.1.0"` 在 DSH 0.2.0 上会被
-  `dsh-app-boot` 的 `evaluatePluginCompatibility` 判为不兼容，直接拒绝加载。改为 `"*"`，显式声明
-  兼容所有版本——本插件不持久化任何数据（尺寸存在浏览器 `localStorage`），只依赖
-  `settings.general.item` 槽位与 `slots` / `locale` 服务，没有锁主版本的必要。
+- **DSH 0.2.0 拒绝加载本插件**：0.1.4 里声明的 `"@deepseek-ai/dsh": "^0.1.0"` 属于过窄的范围。
+  DSH 0.2.0 起会在启动时用 `dsh-app-boot` 的 `evaluatePluginCompatibility` 强制校验
+  `package.json` 的 `peerDependencies`，不满足即**拒绝加载**。现改为 `"*"`，显式声明兼容所有版本。
+- **依据**：本插件不持久化任何数据（尺寸存在浏览器 `localStorage`，与 DSH 版本无关），只依赖
+  `settings.general.item` 槽位与 `slots` / `locale` 两个客户端服务，没有锁主版本的必要。
+
+### 变更
+
 - 文档同步：README 的兼容范围更新为 `*`，验证版本表补上 `0.2.0-rc.1`，并记录"如何声明兼容所有版本"
-  （`*` 与 `workspace:*` 的语义差别、以及范围过窄为何会被拒）。
+  ——`*` 表示任意版本，而 `workspace:*` / `workspace:^` / `workspace:~` 会被替换成**当前运行版本**，
+  语义是"只兼容这一版"。
 
 ## [0.1.4] - 2026-09-21
 
@@ -73,6 +80,7 @@
 - 尺寸写入 `localStorage`（键 `dsh-settings-size:size`），刷新后保留。
 - 工程化：双面包结构（host no-op + browser bundle）、中英双 README、MIT 许可、`dsh-plugin` topic。
 
+[0.1.5]: https://github.com/alexzshl/dsh-settings-size/compare/0.1.4...0.1.5
 [0.1.4]: https://github.com/alexzshl/dsh-settings-size/compare/0.1.3...0.1.4
 [0.1.3]: https://github.com/alexzshl/dsh-settings-size/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/alexzshl/dsh-settings-size/releases/tag/0.1.2
