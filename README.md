@@ -121,13 +121,10 @@ dsh plugin --profile web remove -w dsh-settings-size
 | 设置行位置 | `settings.general.item`，`id: settings-size`，`order: 15` |
 | 依赖服务 | `slots`、`locale` |
 | 语言命名空间 | `settings.size`（zh / en，跟随 DSH 语言自动切换） |
-| DSH 兼容范围 | `*`（任意版本，不锁主版本） |
 
 ---
 
 ## 兼容性与已知限制
-
-### 版本兼容性
 
 本插件在以下 DSH 版本上**手动验证通过**：
 
@@ -137,17 +134,9 @@ dsh plugin --profile web remove -w dsh-settings-size
 | `0.1.7-rc.2` | ✅ 通过 |
 | `0.2.0-rc.1` | ✅ 通过 |
 
-未列出的版本**预期同样可用**。插件只依赖少数稳定契约——`settings.general.item` 槽位、`slots` 与 `locale`
-两个客户端服务、以及设置弹框的 DOM 结构——不读取任何内部实现或未公开字段，因此升级带来破坏性变更的
-概率很低。第三方平台整理的兼容性结果（如 [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)）也值得一并参考。
-
-插件在 `package.json` 中声明了 `"@deepseek-ai/dsh": "*"`——**不限制主版本**。DSH 启动时会用
-`semver.satisfies()` 校验该范围，`*` 对任何版本（含预发布）都成立，因此不会被拒绝加载。
-
-之所以敢这样声明：本插件只用到 `settings.general.item` 槽位、`slots` / `locale` 两个客户端服务，以及
-设置弹框的 DOM 结构，这些是长期稳定的契约；它**不持久化任何数据**（尺寸存在浏览器 `localStorage`，
-与 DSH 版本无关），因此不存在跨版本的存储格式兼容问题。若将来 DSH 引入真正破坏性的槽位或服务变更，
-再收窄这个范围即可。
+未列出的版本**预期同样可用**：插件只依赖 `settings.general.item` 槽位、`slots` 与 `locale` 两个客户端
+服务、以及设置弹框的 DOM 结构——不读取任何内部实现或未公开字段。第三方平台整理的兼容性结果
+（如 [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)）也值得一并参考。
 
 如果你在某个版本上遇到问题，或者有改进建议，欢迎[提交 Issue](https://github.com/alexzshl/dsh-settings-size/issues)
 或直接发起 PR；报告时请附上 `dsh --version` 的输出与具体现象。
@@ -158,14 +147,6 @@ dsh plugin --profile web remove -w dsh-settings-size
   只需要改 `lib/client.js` 里的 `PANEL` 常量，其余逻辑不受影响——这也是不用哈希类名的原因。
 - **只影响 Web GUI**。TUI / desktop profile 不加载 `dsh.client`，插件对它无副作用。
 - **不修改任何 shipped 文件**：全部通过覆盖式 CSS 与槽位注册实现。
-- **版本兼容声明只能写在 `peerDependencies`**：`dsh-app-boot` 的 `evaluatePluginCompatibility`
-  只扫描 `package.json` 里 `@deepseek-ai/dsh` 与 `@deepseek-ai/dsh-*` 开头的 peer，用
-  `semver.satisfies(runtime, range, { includePrerelease: true })` 比对，不满足时给出插件名、版本与
-  运行版本的告警（另有 exact-version 豁免机制）。`cordis.yml` / `cordis.patch.yml` 里的
-  `dshCompatibility` 之类字段**不会被读取**——那个文件是 patch 数组，多塞一个键只会让 loader 告警并跳过。
-- **想声明"兼容所有版本"就写 `"@deepseek-ai/dsh": "*"`**。`workspace:*` / `workspace:^` / `workspace:~`
-  也可用，但它们会在比较前被替换成**当前运行版本**，语义是"只兼容我这一版"。反过来，`^0.1.0`
-  这类范围会在 0.2.0 上被**拒绝加载**——本插件早期正是这么踩的。
 - 尺寸以 CSS 像素计，浏览器缩放会等比影响观感（与 DSH 其他 UI 一致）。
 
 ---
@@ -295,6 +276,41 @@ dsh-settings-size/
 
 共同点是：**内层作用域声明了与外层同名但语义不同的绑定，且失败是静默的。**
 调试这类问题时，先拿运行态数据（DOM 探针 / 实际计算样式），不要凭猜测改选择器。
+
+</details>
+
+<details>
+<summary><b>版本兼容声明</b> —— 插件与 DSH 之间的版本约束是怎么生效的</summary>
+
+> 这一节与插件功能无关，只是 `package.json` 里一行声明的来龙去脉，供插件作者参考。
+
+DSH 0.2.0 起会在启动时**强制校验**插件的 `peerDependencies`，范围不满足即**拒绝加载插件**。校验由
+`dsh-app-boot` 的 `evaluatePluginCompatibility` 执行：
+
+```js
+// 只扫描 @deepseek-ai/dsh 与 @deepseek-ai/dsh-* 开头的 peer
+const requirement = ["workspace:^", "workspace:~", "workspace:*"].includes(range)
+  ? runtimeVersion            // 这三个会被替换成「当前运行版本」
+  : range;
+if (!semver.satisfies(runtimeVersion, requirement, { includePrerelease: true })) peers[name] = range;
+```
+
+本插件的选择与理由：
+
+- **声明为 `"@deepseek-ai/dsh": "*"`**，即不限制主版本。`*` 对任何版本（含预发布）都成立，因此永远
+  不会被拒绝加载。
+- **为什么敢这样写**：插件只用到 `settings.general.item` 槽位、`slots` / `locale` 两个客户端服务、
+  以及设置弹框的 DOM 结构——都是长期稳定的契约；它**不持久化任何数据**（尺寸存在浏览器
+  `localStorage`，与 DSH 版本无关），不存在跨版本的存储格式需要对齐。若将来 DSH 出现真正破坏性的
+  槽位或服务变更，再收窄范围即可。
+
+两个容易踩的点：
+
+1. **`workspace:*` / `workspace:^` / `workspace:~` 不是"任意版本"**，它们在比较前会被替换成**当前运行
+   版本**，语义是"只兼容我这一版"——下次 DSH 升级后同样会被拒绝。
+2. **范围过窄会被拒**。本插件 0.1.4 曾声明 `^0.1.0`，在 DSH 0.2.0 上直接导致插件不加载（0.1.5 修复）。
+3. `cordis.yml` / `cordis.patch.yml` 里的 `dshCompatibility` 之类字段**不会被读取**——那个文件是 patch
+   数组，多塞一个键只会让 loader 告警并跳过该条目。声明只能写在 `package.json` 的 `peerDependencies`。
 
 </details>
 

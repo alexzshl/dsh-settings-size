@@ -119,13 +119,10 @@ The dialog resizes **as you drag** — no close-and-reopen.
 | Row slot | `settings.general.item`, `id: settings-size`, `order: 15` |
 | Injected services | `slots`, `locale` |
 | Locale namespace | `settings.size` (zh / en, follows the active DSH language) |
-| DSH compatibility | `*` (any version, no major pin) |
 
 ---
 
 ## Compatibility and known limits
-
-### Version compatibility
 
 Manually verified against:
 
@@ -135,19 +132,10 @@ Manually verified against:
 | `0.1.7-rc.2` | ✅ passes |
 | `0.2.0-rc.1` | ✅ passes |
 
-Versions not listed here are **expected to work as well**. The plugin depends on only a few stable
-contracts — the `settings.general.item` slot, the `slots` and `locale` client services, and the settings
-dialog's DOM structure — and reads no internal implementation or undocumented field, so a breaking upgrade
-is unlikely. Compatibility results collected by third-party platforms (such as [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)) are worth checking too.
-
-`package.json` declares `"@deepseek-ai/dsh": "*"` — **no major-version pin**. DSH validates that range with
-`semver.satisfies()` at startup, and `*` holds for every version (prereleases included), so the plugin is
-never refused.
-
-Why that is safe here: the plugin uses only the `settings.general.item` slot, the `slots` / `locale` client
-services, and the settings dialog's DOM structure — all long-stable contracts. It **persists no data** (the
-size lives in browser `localStorage`, independent of the DSH version), so there is no cross-version storage
-format to keep in step. Narrow the range if DSH ever ships a genuinely breaking slot or service change.
+Versions not listed here are **expected to work as well**: the plugin depends only on the
+`settings.general.item` slot, the `slots` and `locale` client services, and the settings dialog's DOM
+structure — it reads no internal implementation or undocumented field. Compatibility results collected by
+third-party platforms (such as [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)) are worth checking too.
 
 If it misbehaves on your version, or you have an improvement in mind, please
 [open an issue](https://github.com/alexzshl/dsh-settings-size/issues) or send a PR — include the output of
@@ -160,16 +148,6 @@ If it misbehaves on your version, or you have an improvement in mind, please
   exactly why the hashed class name is not used.
 - **Web GUI only.** The TUI and desktop profiles never load `dsh.client`, so the plugin has no effect there.
 - **No shipped file is modified** — everything is done with overriding CSS and a slot registration.
-- **A compatibility declaration can only live in `peerDependencies`**: `dsh-app-boot`'s
-  `evaluatePluginCompatibility` scans only `package.json` peers named `@deepseek-ai/dsh` or starting with
-  `@deepseek-ai/dsh-`, comparing them with `semver.satisfies(runtime, range, { includePrerelease: true })`
-  and reporting the plugin name, version, and runtime version on a mismatch (with an exact-version exemption
-  mechanism). A `dshCompatibility`-style field in `cordis.yml` / `cordis.patch.yml` is **never read** — that
-  file is a patch array, so an extra key only makes the loader warn and skip the entry.
-- **To declare "compatible with every version", write `"@deepseek-ai/dsh": "*"`.** `workspace:*`,
-  `workspace:^` and `workspace:~` also work, but they are replaced by the **current runtime version** before
-  comparison — i.e. they mean "only this one version". Conversely, a range such as `^0.1.0` is **refused** on
-  0.2.0 — the mistake this plugin made in its early releases.
 - Sizes are CSS pixels; browser zoom scales the result like any other DSH UI.
 
 ---
@@ -304,6 +282,46 @@ Both hit this plugin as **silent failures**, and both are variable shadowing. Wr
 The common shape: **an inner scope declares a binding with the same name as an outer one but different
 semantics, and the failure is silent.** When debugging that class of problem, get runtime facts first
 (a DOM probe, the computed style) instead of guessing at selectors.
+
+</details>
+
+<details>
+<summary><b>Version compatibility declaration</b> — how the plugin-to-DSH constraint is enforced</summary>
+
+> This has nothing to do with what the plugin does; it is the story behind one line in `package.json`,
+> kept here for plugin authors.
+
+Since DSH 0.2.0, startup **enforces** a plugin's `peerDependencies` and **refuses to load** the plugin when
+the range does not match. The check is `dsh-app-boot`'s `evaluatePluginCompatibility`:
+
+```js
+// only peers named @deepseek-ai/dsh or starting with @deepseek-ai/dsh-* are scanned
+const requirement = ["workspace:^", "workspace:~", "workspace:*"].includes(range)
+  ? runtimeVersion            // these three are replaced by the CURRENT runtime version
+  : range;
+if (!semver.satisfies(runtimeVersion, requirement, { includePrerelease: true })) peers[name] = range;
+```
+
+What this plugin does, and why:
+
+- It declares **`"@deepseek-ai/dsh": "*"`** — no major-version pin. `*` holds for every version
+  (prereleases included), so the plugin is never refused.
+- **Why that is safe here**: the plugin uses only the `settings.general.item` slot, the `slots` / `locale`
+  client services, and the settings dialog's DOM structure — all long-stable contracts. It **persists no
+  data** (the size lives in browser `localStorage`, independent of the DSH version), so there is no
+  cross-version storage format to keep in step. Narrow the range if DSH ever ships a genuinely breaking slot
+  or service change.
+
+Three things that are easy to get wrong:
+
+1. **`workspace:*` / `workspace:^` / `workspace:~` are not "any version"** — they are replaced by the
+   **current runtime version** before comparison, so they mean "only this one version" and will be refused
+   after the next DSH upgrade.
+2. **A range that is too narrow gets refused.** This plugin declared `^0.1.0` in 0.1.4, which stopped it from
+   loading on DSH 0.2.0 (fixed in 0.1.5).
+3. A `dshCompatibility`-style field in `cordis.yml` / `cordis.patch.yml` is **never read** — that file is a
+   patch array, so an extra key only makes the loader warn and skip the entry. The declaration can only live
+   in `package.json`'s `peerDependencies`.
 
 </details>
 
