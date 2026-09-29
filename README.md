@@ -121,7 +121,7 @@ dsh plugin --profile web remove -w dsh-settings-size
 | 设置行位置 | `settings.general.item`，`id: settings-size`，`order: 15` |
 | 依赖服务 | `slots`、`locale` |
 | 语言命名空间 | `settings.size`（zh / en，跟随 DSH 语言自动切换） |
-| DSH 兼容范围 | `^0.1.0`（`peerDependencies` 里的 `@deepseek-ai/dsh`） |
+| DSH 兼容范围 | `*`（任意版本，不锁主版本） |
 
 ---
 
@@ -135,13 +135,19 @@ dsh plugin --profile web remove -w dsh-settings-size
 |---|---|
 | `0.1.5-rc.2` | ✅ 通过 |
 | `0.1.7-rc.2` | ✅ 通过 |
+| `0.2.0-rc.1` | ✅ 通过 |
 
 未列出的版本**预期同样可用**。插件只依赖少数稳定契约——`settings.general.item` 槽位、`slots` 与 `locale`
 两个客户端服务、以及设置弹框的 DOM 结构——不读取任何内部实现或未公开字段，因此升级带来破坏性变更的
 概率很低。第三方平台整理的兼容性结果（如 [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)）也值得一并参考。
 
-插件在 `package.json` 中声明了 `"@deepseek-ai/dsh": "^0.1.0"`，DSH 启动时会用 `semver.satisfies()`
-自动校验，不满足时给出明确的版本冲突告警。
+插件在 `package.json` 中声明了 `"@deepseek-ai/dsh": "*"`——**不限制主版本**。DSH 启动时会用
+`semver.satisfies()` 校验该范围，`*` 对任何版本（含预发布）都成立，因此不会被拒绝加载。
+
+之所以敢这样声明：本插件只用到 `settings.general.item` 槽位、`slots` / `locale` 两个客户端服务，以及
+设置弹框的 DOM 结构，这些是长期稳定的契约；它**不持久化任何数据**（尺寸存在浏览器 `localStorage`，
+与 DSH 版本无关），因此不存在跨版本的存储格式兼容问题。若将来 DSH 引入真正破坏性的槽位或服务变更，
+再收窄这个范围即可。
 
 如果你在某个版本上遇到问题，或者有改进建议，欢迎[提交 Issue](https://github.com/alexzshl/dsh-settings-size/issues)
 或直接发起 PR；报告时请附上 `dsh --version` 的输出与具体现象。
@@ -157,6 +163,9 @@ dsh plugin --profile web remove -w dsh-settings-size
   `semver.satisfies(runtime, range, { includePrerelease: true })` 比对，不满足时给出插件名、版本与
   运行版本的告警（另有 exact-version 豁免机制）。`cordis.yml` / `cordis.patch.yml` 里的
   `dshCompatibility` 之类字段**不会被读取**——那个文件是 patch 数组，多塞一个键只会让 loader 告警并跳过。
+- **想声明"兼容所有版本"就写 `"@deepseek-ai/dsh": "*"`**。`workspace:*` / `workspace:^` / `workspace:~`
+  也可用，但它们会在比较前被替换成**当前运行版本**，语义是"只兼容我这一版"。反过来，`^0.1.0`
+  这类范围会在 0.2.0 上被**拒绝加载**——本插件早期正是这么踩的。
 - 尺寸以 CSS 像素计，浏览器缩放会等比影响观感（与 DSH 其他 UI 一致）。
 
 ---

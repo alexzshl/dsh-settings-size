@@ -119,7 +119,7 @@ The dialog resizes **as you drag** — no close-and-reopen.
 | Row slot | `settings.general.item`, `id: settings-size`, `order: 15` |
 | Injected services | `slots`, `locale` |
 | Locale namespace | `settings.size` (zh / en, follows the active DSH language) |
-| DSH compatibility | `^0.1.0` (the `@deepseek-ai/dsh` peer) |
+| DSH compatibility | `*` (any version, no major pin) |
 
 ---
 
@@ -133,14 +133,21 @@ Manually verified against:
 |---|---|
 | `0.1.5-rc.2` | ✅ passes |
 | `0.1.7-rc.2` | ✅ passes |
+| `0.2.0-rc.1` | ✅ passes |
 
 Versions not listed here are **expected to work as well**. The plugin depends on only a few stable
 contracts — the `settings.general.item` slot, the `slots` and `locale` client services, and the settings
 dialog's DOM structure — and reads no internal implementation or undocumented field, so a breaking upgrade
 is unlikely. Compatibility results collected by third-party platforms (such as [dsh.so](https://www.dsh.so/artifact/dsh-settings-size/)) are worth checking too.
 
-`package.json` declares `"@deepseek-ai/dsh": "^0.1.0"`, which DSH validates with `semver.satisfies()` at
-startup and reports as an explicit version conflict when unsatisfied.
+`package.json` declares `"@deepseek-ai/dsh": "*"` — **no major-version pin**. DSH validates that range with
+`semver.satisfies()` at startup, and `*` holds for every version (prereleases included), so the plugin is
+never refused.
+
+Why that is safe here: the plugin uses only the `settings.general.item` slot, the `slots` / `locale` client
+services, and the settings dialog's DOM structure — all long-stable contracts. It **persists no data** (the
+size lives in browser `localStorage`, independent of the DSH version), so there is no cross-version storage
+format to keep in step. Narrow the range if DSH ever ships a genuinely breaking slot or service change.
 
 If it misbehaves on your version, or you have an improvement in mind, please
 [open an issue](https://github.com/alexzshl/dsh-settings-size/issues) or send a PR — include the output of
@@ -159,6 +166,10 @@ If it misbehaves on your version, or you have an improvement in mind, please
   and reporting the plugin name, version, and runtime version on a mismatch (with an exact-version exemption
   mechanism). A `dshCompatibility`-style field in `cordis.yml` / `cordis.patch.yml` is **never read** — that
   file is a patch array, so an extra key only makes the loader warn and skip the entry.
+- **To declare "compatible with every version", write `"@deepseek-ai/dsh": "*"`.** `workspace:*`,
+  `workspace:^` and `workspace:~` also work, but they are replaced by the **current runtime version** before
+  comparison — i.e. they mean "only this one version". Conversely, a range such as `^0.1.0` is **refused** on
+  0.2.0 — the mistake this plugin made in its early releases.
 - Sizes are CSS pixels; browser zoom scales the result like any other DSH UI.
 
 ---

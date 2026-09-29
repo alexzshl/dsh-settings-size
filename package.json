@@ -48,6 +48,7 @@
     "web-ui"
   ],
   "peerDependencies": {
+    "@deepseek-ai/dsh": "*",
     "react": "^18.2.0"
   }
 }

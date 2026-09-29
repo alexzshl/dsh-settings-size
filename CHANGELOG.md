@@ -5,6 +5,17 @@
 格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [未发布]
+
+### 修复
+
+- **DSH 0.2.0 拒绝加载本插件**：早期声明的 `"@deepseek-ai/dsh": "^0.1.0"` 在 DSH 0.2.0 上会被
+  `dsh-app-boot` 的 `evaluatePluginCompatibility` 判为不兼容，直接拒绝加载。改为 `"*"`，显式声明
+  兼容所有版本——本插件不持久化任何数据（尺寸存在浏览器 `localStorage`），只依赖
+  `settings.general.item` 槽位与 `slots` / `locale` 服务，没有锁主版本的必要。
+- 文档同步：README 的兼容范围更新为 `*`，验证版本表补上 `0.2.0-rc.1`，并记录"如何声明兼容所有版本"
+  （`*` 与 `workspace:*` 的语义差别、以及范围过窄为何会被拒）。
+
 ## [0.1.4] - 2026-09-21
 
 为插件补上**显式的 DSH 版本兼容声明**：把"升级 DSH 后莫名不工作"提前为"启动时明确的版本冲突告警"。
